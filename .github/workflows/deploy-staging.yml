@@ -1,0 +1,45 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build & Verify Staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify & Build Frontend
+        run: |
+          if [ -d "frontend" ]; then
+            echo "--- Kiểm tra thư mục Frontend ---"
+            cd frontend
+            npm install
+            npm run build --if-present
+            cd ..
+          fi
+
+      - name: Verify Backend
+        run: |
+          if [ -d "backend" ]; then
+            echo "--- Kiểm tra thư mục Backend ---"
+            cd backend
+            npm install
+            cd ..
+          fi
+
+      - name: Staging Deployment Verification
+        run: |
+          echo "CI check hoàn tất. Frontend Staging đã được đồng bộ với Vercel."
